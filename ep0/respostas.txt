@@ -1,0 +1,47 @@
+1. 
+
+    Para a pergunta 1 escolhi os dois quadros abaixo.
+
+    Número  Ip Fonte        Ip Destino      Mac Origem          Mac Destino         Protocolo
+    2       192.168.0.24    200.144.248.43  58:a0:23:0a:1a:a4   e8:20:e2:56:2f:f8   TCP
+    7       192.168.0.24    198.252.206.25  58:a0:23:0a:1a:a4   e8:20:e2:56:2f:f8   TCP
+
+    - O quadro número 2 foi criado por uma das abas do navegador Chrome solicitando
+    informações para o servidor do edisciplinas. Descobri isso da seguinte forma: 
+
+        - Expandi as informações desse quadro no WireShark e notei que o porta origem
+          utilizada nessa comunicação era 36414.
+
+        - Com a porta em mãos, executei o comando lsof para descobrir qual aplicação 
+          da minha máquina estava rodando nessa porta.
+
+          $ sudo lsof -i:36414
+          COMMAND  PID  USER   FD   TYPE DEVICE SIZE/OFF NODE NAME
+          chrome  9746 lucas   67u  IPv4  89307      0t0  TCP predator:36414->uspdigital.usp.br:https (ESTABLISHED)
+
+    - O quadro número 7 foi criado por uma das abas do navegador Chrome solicitando 
+    informações para o servidor do stackoverflow. Descobri isso da seguinte forma: 
+
+        - Expandi as informações desse quadro no WireShark e notei que o porta origem
+          utilizada nessa comunicação era 41730.
+
+        - Com a porta em mãos, executei o comando lsof para descobrir qual aplicação 
+          da minha máquina estava rodando nessa porta.
+
+          $ sudo lsof -i:41730
+          COMMAND  PID  USER   FD   TYPE DEVICE SIZE/OFF NODE NAME
+          chrome  9746 lucas   50u  IPv4  89641      0t0  TCP predator:41730->stackoverflow.com:https (ESTABLISHED)
+
+2.
+
+    Pelas capturas do WireShark no arquivo pergunta2.pcapng podemos dizer que o tempo
+    total para o download do arquivo foi de 0.145619667 segundos.
+
+    No meu sistema o arquivo resultante do download tem tamanho de 8 bytes. 
+
+    Para calcular o tamanho total de dados baixados durante a conexão, eu apliquei
+    um filtro de Follow TCP (clicar com o botão direito do mouse > Follow > TCP Stream)
+    para a conexão estabelecida na direção do servidor da USP para a minha máquina (usp -> eu). 
+    Dessa forma, podemos ver que um total de 4253 bytes foram transferidos nessa direção. 
+    Se considerarmos que 8 bytes são o arquivo em si, tivemos uma sobrecarga 
+    de 4245 bytes (53062.5% de sobrecarga).
