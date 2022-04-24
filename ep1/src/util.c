@@ -1,21 +1,22 @@
 #include <util.h>
 
+/* Structure describing the action to be taken when a signal arrives.  */
 struct sigaction sigIntAction;
 
-char *strncatM(char *dest, const char *src, int n, size_t startPoint) {
+char *printByteInBinaryFormat(char *dest, const char *src, int n, size_t startPoint) {
     for (size_t i = 0; i < n; i++)
         dest[startPoint + i] = src[i];
     return dest;
 }
 
-void checkSize(int size, int expectedSize, int errorCode) {
+void isSizeCorrect(int size, int expectedSize, int errorCode) {
     if (size < expectedSize) {
         fprintf(stderr, "Malformed packet! Closing connection.\n");
         exit(errorCode);
     }
 }
 
-void cleanTmpFiles(char *folder) {
+void cleanFolder(char *folder) {
     DIR *tmpFolder;
     struct dirent *nextPipe;
     char *filePath;
@@ -32,7 +33,7 @@ void cleanTmpFiles(char *folder) {
         filePath = malloc((strlen(folder) + strlen(nextPipe->d_name) + 2) * sizeof(char));
         sprintf(filePath, "%s/%s", folder, nextPipe->d_name);
         if (nextPipe->d_type == DT_DIR) {
-            cleanTmpFiles(filePath);
+            cleanFolder(filePath);
         }
 
         if (remove(filePath) == -1) {
@@ -53,19 +54,19 @@ void cleanTmpFiles(char *folder) {
     }
 }
 
-void sigIntHandler(int sig_no) {
+void terminationHandler(int sig_no) {
     printf("\n[CTRL-C pressed. Closing connection.]\n");
-    cleanTmpFiles(TMP_DIR);
+    cleanFolder(TMP_DIR);
     //Sets default behavior back
     sigaction(SIGINT, &sigIntAction, NULL);
     kill(0, SIGINT);
 }
 
-void setCleanUpHook() {
+void setTerminationHandler() {
     struct sigaction action;
     bzero(&action, sizeof(action));
 
-    action.sa_handler = &sigIntHandler;
+    action.sa_handler = &terminationHandler;
     sigaction(SIGINT, &action, &sigIntAction);
 }
 
@@ -73,7 +74,7 @@ void resetCleanUpHook() {
     sigaction(SIGINT, &sigIntAction, NULL);
 }
 
-int getOrCreateTopicFile(char *topicPath, mode_t mode) {
+int getTopicPipe(char *topicPath, mode_t mode) {
     pid_t pid = getpid();
     int pidDigits = floor(log10(abs(pid))) + 1;
 

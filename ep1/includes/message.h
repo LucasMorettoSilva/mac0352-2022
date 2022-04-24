@@ -7,7 +7,7 @@
 #include <stdlib.h>
 #include <stdio.h>
 
-#define EXIT_MESSAGE 11
+#include <constants.h>
 
 typedef struct {
     int packetType;
@@ -15,14 +15,5 @@ typedef struct {
     int remainingSize;
     char * remaining;
 } Message;
-
-typedef struct {
-    char * data;
-    int size;
-} Packet;
-
-Packet createPacketFromMessage(Message message);
-
-Message createMQTTMessageFromData(Packet raw);
 
 #endif

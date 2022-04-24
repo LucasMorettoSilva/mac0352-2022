@@ -9,7 +9,26 @@
 #include <util.h>
 #include <constants.h>
 
-int main (int argc, char **argv) {
+void createTmpFolder() {
+    if (mkdir(TMP_DIR, 0777) == -1) {
+        perror("mkdir :(\n");
+        exit(EXIT_FAILURE);
+    };
+}
+
+void writeMessageToPipe(int connfd, Message response) {
+    Packet output = messageToPacket(response);
+
+    if (write(connfd, output.data, output.size) < 0) {
+        perror("Erro ao escrever dados da mensagem. Fechando conexão.\n");
+        exit(EXIT_FAILURE);
+    }
+
+    free(response.remaining);
+    free(output.data);
+}
+
+int main(int argc, char **argv) {
     int listenfd, connfd;
     /* Informações sobre o ‘socket’ (endereço e porta) ficam nesta struct */
     struct sockaddr_in servaddr;
@@ -19,8 +38,8 @@ int main (int argc, char **argv) {
     bzero(input.data, (MAXLINE + 1));
 
     if (argc != 2) {
-        fprintf(stderr,"Uso: %s <Porta>\n",argv[0]);
-        fprintf(stderr,"Vai rodar um servidor MQTT na porta <Porta> TCP\n");
+        fprintf(stderr, "Uso: %s <Porta>\n", argv[0]);
+        fprintf(stderr, "Vai rodar um servidor MQTT na porta <Porta> TCP\n");
         exit(EXIT_FAILURE);
     }
 
@@ -46,10 +65,10 @@ int main (int argc, char **argv) {
      * argumento no shell (atoi(argv[1]))
      */
     bzero(&servaddr, sizeof(servaddr));
-    servaddr.sin_family      = AF_INET;
+    servaddr.sin_family = AF_INET;
     servaddr.sin_addr.s_addr = htonl(INADDR_ANY);
-    servaddr.sin_port        = htons(atoi(argv[1]));
-    if (bind(listenfd, (struct sockaddr *)&servaddr, sizeof(servaddr)) == -1) {
+    servaddr.sin_port = htons(atoi(argv[1]));
+    if (bind(listenfd, (struct sockaddr *) &servaddr, sizeof(servaddr)) == -1) {
         perror("bind :(\n");
         exit(EXIT_FAILURE);
     }
@@ -65,19 +84,16 @@ int main (int argc, char **argv) {
 
     /* Cria a pasta temporária em que 
      * serão armazenados os pipes */
-    if(mkdir(TMP_DIR, 0777) == -1) {
-        perror("mkdir :(\n");
-        exit(EXIT_FAILURE);
-    };
+    createTmpFolder();
 
     /* Define rotinas de clean up para serem executadas
      * quando o processo estiver finalizando */
-    setCleanUpHook();
+    setTerminationHandler();
 
-    printf("[Servidor no ar. Aguardando conexões na porta %s]\n",argv[1]);
-    printf("[Para finalizar, pressione CTRL+C]\n");
-   
-	while(1) {
+    printf("[Servidor no ar. Aguardando conexões na porta %s]\n", argv[1]);
+    printf("[Para finalizar, pressione CTRL+C ou rode um kill ou killall]\n");
+
+    while (1) {
         /* O socket inicial que foi criado é o socket que vai aguardar
          * pela conexão na porta especificada. Mas pode ser que existam
          * diversos clientes conectando no servidor. Por isso deve-se
@@ -85,11 +101,11 @@ int main (int argc, char **argv) {
          * da fila de conexões que foram aceitas no socket listenfd e
          * vai criar um socket específico para esta conexão. O descritor
          * deste novo socket é o retorno da função accept. */
-        if ((connfd = accept(listenfd, (struct sockaddr *) NULL, NULL)) == -1 ) {
+        if ((connfd = accept(listenfd, (struct sockaddr *) NULL, NULL)) == -1) {
             perror("accept :(\n");
             exit(EXIT_FAILURE);
         }
-      
+
         /* Agora o servidor precisa tratar este cliente de forma
          * separada. Para isto é criado um processo filho usando a
          * função fork. O processo vai ser uma cópia deste. Depois da
@@ -100,7 +116,7 @@ int main (int argc, char **argv) {
          * que voltar no loop para continuar aceitando novas conexões.
          * Se o retorno da função fork for zero, é porque está no
          * processo filho. */
-        if ( (childpid = fork()) == 0) {
+        if ((childpid = fork()) == 0) {
             /**** PROCESSO FILHO ****/
             printf("\n[Uma conexão aberta]\n");
             /* Já que está no processo filho, não precisa mais do socket
@@ -110,51 +126,43 @@ int main (int argc, char **argv) {
             /* Processo filho não precisa executar
              * as rotinas de clean up */
             resetCleanUpHook();
-        
-            while ((input.size=read(connfd, input.data, MAXLINE)) > 0) {
-                printf("\n[Cliente conectado no processo filho %d enviou uma mensagem]",getpid());
-                Message message = createMQTTMessageFromData(input);
-                Message response = processMQTTMessage(message, connfd);
 
-                if(response.packetType == SPECIAL)
+            while ((input.size = read(connfd, input.data, MAXLINE)) > 0) {
+                printf("\n[Cliente conectado no processo filho %d enviou uma mensagem]", getpid());
+                Message message = packetToMessage(input);
+                Message response = readMessage(message, connfd);
+
+                if (response.packetType == SPECIAL)
                     break;
 
-                Packet output = createPacketFromMessage(response);
-
-                if(write(connfd, output.data, output.size) < 0) {
-                    perror("Error writing data. Closing connection.\n");
-                    exit(EXIT_FAILURE);
-                }
-
-                free(response.remaining);
-                free(output.data);
+                writeMessageToPipe(connfd, response);
             }
 
-            if(input.size < 0) {
-                perror("Error reading data. Closing connection.\n");
+            if (input.size < 0) {
+                perror("Erro ao ler dados da mensagem. Fechando conexão.\n");
                 exit(EXIT_FAILURE);
             }
 
             /* Caso tenha uma thread de subscribe rodando, a finaliza */
-            cleanListener();
+            terminateThread();
 
             /* Após ter feito toda a troca de informação com o cliente,
              * pode finalizar o processo filho */
             printf("[Uma conexão fechada]\n");
             exit(EXIT_SUCCESS);
-        }
-        else
+        } else {
             /**** PROCESSO PAI ****/
-            
+
             /* Evita que os processos filhos
             continuem vivos após o término
             de sua execução */
             signal(SIGCHLD, SIG_IGN);
+        }
 
-            /* Se for o pai, a única coisa a ser feita é fechar o socket
-             * connfd (ele é o socket do cliente específico que será tratado
-             * pelo processo filho) */
-            close(connfd);
+        /* Se for o pai, a única coisa a ser feita é fechar o socket
+         * connfd (ele é o socket do cliente específico que será tratado
+         * pelo processo filho) */
+        close(connfd);
     }
     free(input.data);
     exit(EXIT_SUCCESS);
