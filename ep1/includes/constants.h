@@ -9,12 +9,13 @@
 #define CONNECT 1
 #define CONNACK 2
 #define PUBLISH 3
+#define PUBACK 4
 #define SUBSCRIBE 8
 #define SUBACK 9
 #define PINGREQ 12
 #define PINGRESP 13
 #define DISCONNECT 14
-#define SPECIAL 15
+#define RESERVED 15
 
 #define TMP_DIR "/tmp/ep1-mac0352"
 #define LISTENQ 1

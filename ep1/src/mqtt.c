@@ -127,8 +127,7 @@ Message readMessage(Message message, int socketfd) {
         case PUBLISH:;
             Topic topicPub = getTopic(message);
             handlePublish(topicPub, messageToPacket(message));
-
-            response.packetType = SPECIAL;
+            response.packetType = PUBACK;
             break;
         case SUBSCRIBE:;
             char *packetIdentifier = getPacketIdentifier(&message);
@@ -139,11 +138,11 @@ Message readMessage(Message message, int socketfd) {
             response.remainingSize = 3;
             response.remaining = malloc(3 * sizeof(char));
             bzero(response.remaining, 3);
-            printByteInBinaryFormat(response.remaining, packetIdentifier, 2, 0);
+            byteToBinary(response.remaining, packetIdentifier, 2, 0);
             free(packetIdentifier);
             break;
         case DISCONNECT:;
-            response.packetType = SPECIAL;
+            response.packetType = RESERVED;
             break;
         default:
             fprintf(stderr, "Tipo de pacote invalido! Terminando conexão.\n");
@@ -230,10 +229,10 @@ Packet messageToPacket(Message message) {
     packet.data[0] = (message.packetType << 4 & 0b11110000) | (message.flags & 0b00001111);
     readedBytes++;
 
-    printByteInBinaryFormat(packet.data, encodedRemainingLength.data, encodedRemainingLength.size, readedBytes);
+    byteToBinary(packet.data, encodedRemainingLength.data, encodedRemainingLength.size, readedBytes);
     readedBytes += encodedRemainingLength.size;
 
-    printByteInBinaryFormat(packet.data, message.remaining, message.remainingSize, readedBytes);
+    byteToBinary(packet.data, message.remaining, message.remainingSize, readedBytes);
     readedBytes += message.remainingSize;
 
     free(encodedRemainingLength.data);
@@ -255,7 +254,7 @@ Message packetToMessage(Packet raw) {
     remainingLength = decodeRemainingLength(&raw);
     if (remainingLength > 0) {
         remaining = malloc(remainingLength * sizeof(char));
-        printByteInBinaryFormat(remaining, raw.data, remainingLength, 0);
+        byteToBinary(remaining, raw.data, remainingLength, 0);
     }
 
     return buildMessage(packetType, flags, remainingLength, remaining);

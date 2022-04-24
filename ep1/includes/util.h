@@ -15,7 +15,7 @@
 
 #define testBit(value, bit) (value & (1 << bit))
 
-char *printByteInBinaryFormat(
+char *byteToBinary(
         char *dest,
         const char *src,
         int n,

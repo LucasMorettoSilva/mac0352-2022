@@ -3,7 +3,7 @@
 /* Structure describing the action to be taken when a signal arrives.  */
 struct sigaction sigIntAction;
 
-char *printByteInBinaryFormat(char *dest, const char *src, int n, size_t startPoint) {
+char *byteToBinary(char *dest, const char *src, int n, size_t startPoint) {
     for (size_t i = 0; i < n; i++)
         dest[startPoint + i] = src[i];
     return dest;

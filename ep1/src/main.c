@@ -132,7 +132,7 @@ int main(int argc, char **argv) {
                 Message message = packetToMessage(input);
                 Message response = readMessage(message, connfd);
 
-                if (response.packetType == SPECIAL)
+                if (response.packetType == RESERVED)
                     break;
 
                 writeMessageToPipe(connfd, response);
