@@ -11,6 +11,10 @@
 
 void createTmpFolder() {
     if (mkdir(TMP_DIR, 0777) == -1) {
+        if (errno == EEXIST) {
+            return;
+        }
+
         perror("mkdir :(\n");
         exit(EXIT_FAILURE);
     };
