@@ -1,8 +1,40 @@
 #include <mqtt.h>
 
-pthread_t listenerID = -1;
+pthread_t threadListener = -1;
 
-void handlePublish(Topic topic, Packet packet) {
+Topic getTopic(Message message) {
+    matchValues(
+            message.remainingSize,
+            2,
+            EXIT_MQTT);
+
+    Topic newTopic;
+    int base = (int) pow(2, 8);
+    newTopic.nameSize = message.remaining[0] * base + message.remaining[1];
+
+    matchValues(
+            message.remainingSize - 2,
+            newTopic.nameSize,
+            EXIT_MQTT);
+
+    newTopic.name = malloc((newTopic.nameSize + 1) * sizeof(char));
+
+    strncpy(
+            newTopic.name,
+            &message.remaining[2],
+            newTopic.nameSize);
+
+    newTopic.name[newTopic.nameSize] = 0;
+
+    return newTopic;
+}
+
+Message publish(Message message, Message response) {
+    Topic topic = getTopic(message);
+    Packet packet = messageToPacket(message);
+
+    response.packetType = PUBACK;
+
     int topicfd;
     DIR *topicFolder;
     struct dirent *currentFile;
@@ -11,7 +43,7 @@ void handlePublish(Topic topic, Packet packet) {
     sprintf(topicPath, "%s/%s", TMP_DIR, topic.name);
     if ((topicFolder = opendir(topicPath)) == NULL) {
         if (errno == ENOENT) //No subscriber
-            return;
+            return response;
         perror("open topic folder :(\n");
         exit(EXIT_MQTT);
     }
@@ -39,6 +71,8 @@ void handlePublish(Topic topic, Packet packet) {
     }
 
     free(topicPath);
+
+    return response;
 }
 
 void cleanThread(void *threadARgs) {
@@ -71,20 +105,8 @@ void *listenTopic(void *rawArgs) {
     pthread_cleanup_pop(1);
 }
 
-void handleSubscribe(Topic topic, int socketfd) {
-    Listener *listenerArgs = malloc(sizeof(Listener));
-    listenerArgs->topicPath = malloc((topic.nameSize + strlen(TMP_DIR) + 2) * sizeof(char));
-    listenerArgs->socketfd = socketfd;
-    sprintf(listenerArgs->topicPath, "%s/%s", TMP_DIR, topic.name);
-
-    if (pthread_create(&listenerID, NULL, listenTopic, listenerArgs) != 0) {
-        perror("pthread :(\n");
-        exit(EXIT_MQTT);
-    }
-}
-
 unsigned char *getPacketIdentifier(Message *message) {
-    isSizeCorrect((*message).remainingSize, 2, EXIT_MQTT);
+    matchValues((*message).remainingSize, 2, EXIT_MQTT);
     unsigned char *packetIdentifier = malloc(2 * sizeof(char));
     packetIdentifier[0] = (*message).remaining[0];
     packetIdentifier[1] = (*message).remaining[1];
@@ -94,20 +116,46 @@ unsigned char *getPacketIdentifier(Message *message) {
     return packetIdentifier;
 }
 
-Topic getTopic(Message message) {
-    isSizeCorrect(message.remainingSize, 2, EXIT_MQTT);
+Message subscribe(Message message, Message response, int socketfd) {
+    char *packetIdentifier = getPacketIdentifier(&message);
+    Topic topic = getTopic(message);
 
-    Topic newTopic;
-    int base = (int) pow(2, 8);
-    newTopic.nameSize = message.remaining[0] * base + message.remaining[1];
+    Listener *listenerArgs = malloc(sizeof(Listener));
+    listenerArgs->topicPath = malloc((topic.nameSize + strlen(TMP_DIR) + 2) * sizeof(char));
+    listenerArgs->socketfd = socketfd;
+    sprintf(listenerArgs->topicPath, "%s/%s", TMP_DIR, topic.name);
 
-    isSizeCorrect(message.remainingSize - 2, newTopic.nameSize, EXIT_MQTT);
+    if (pthread_create(&threadListener, NULL, listenTopic, listenerArgs) != 0) {
+        perror("pthread :(\n");
+        exit(EXIT_MQTT);
+    }
 
-    newTopic.name = malloc((newTopic.nameSize + 1) * sizeof(char));
-    strncpy(newTopic.name, &message.remaining[2], newTopic.nameSize);
-    newTopic.name[newTopic.nameSize] = 0;
+    response.packetType = SUBACK;
+    response.remainingSize = 3;
+    response.remaining = malloc(3 * sizeof(char));
+    bzero(response.remaining, 3);
+    byteToBinary(response.remaining, packetIdentifier, 2, 0);
+    free(packetIdentifier);
 
-    return newTopic;
+    return response;
+}
+
+Message connect(Message response) {
+    response.packetType = CONNACK;
+    response.remainingSize = 2;
+    response.remaining = malloc(2 * sizeof(char));
+    bzero(response.remaining, 2);
+    return response;
+}
+
+Message pingreq(Message response) {
+    response.packetType = PINGRESP;
+    return response;
+}
+
+Message disconnect(Message response) {
+    response.packetType = RESERVED;
+    return response;
 }
 
 Message readMessage(Message message, int socketfd) {
@@ -116,45 +164,24 @@ Message readMessage(Message message, int socketfd) {
 
     switch (message.packetType) {
         case CONNECT:
-            response.packetType = CONNACK;
-            response.remainingSize = 2;
-            response.remaining = malloc(2 * sizeof(char));
-            bzero(response.remaining, 2);
-            break;
+            return connect(response);
         case PINGREQ:
-            response.packetType = PINGRESP;
-            break;
-        case PUBLISH:;
-            Topic topicPub = getTopic(message);
-            handlePublish(topicPub, messageToPacket(message));
-            response.packetType = PUBACK;
-            break;
-        case SUBSCRIBE:;
-            char *packetIdentifier = getPacketIdentifier(&message);
-            Topic topicSub = getTopic(message);
-            handleSubscribe(topicSub, socketfd);
-
-            response.packetType = SUBACK;
-            response.remainingSize = 3;
-            response.remaining = malloc(3 * sizeof(char));
-            bzero(response.remaining, 3);
-            byteToBinary(response.remaining, packetIdentifier, 2, 0);
-            free(packetIdentifier);
-            break;
-        case DISCONNECT:;
-            response.packetType = RESERVED;
-            break;
+            return pingreq(response);
+        case PUBLISH:
+            return publish(message, response);
+        case SUBSCRIBE:
+            return subscribe(message, response, socketfd);
+        case DISCONNECT:
+            return disconnect(response);
         default:
             fprintf(stderr, "Tipo de pacote invalido! Terminando conexão.\n");
             exit(EXIT_MQTT);
     }
-
-    return response;
 }
 
 void terminateThread() {
-    if (listenerID != -1) {
-        pthread_cancel(listenerID);
+    if (threadListener != -1) {
+        pthread_cancel(threadListener);
     }
 }
 
@@ -220,8 +247,11 @@ Packet messageToPacket(Message message) {
     Packet packet;
     bzero(&packet, sizeof(packet));
 
-    Packet encodedRemainingLength = encodeRemainingLength(message.remainingSize);
+    Packet encodedRemainingLength = encodeRemainingLength(
+            message.remainingSize
+            );
     int fixedHeaderSize;
+
     fixedHeaderSize = 1 + encodedRemainingLength.size;
     packet.size = fixedHeaderSize + message.remainingSize;
     packet.data = malloc(packet.size * sizeof(char));
@@ -229,10 +259,18 @@ Packet messageToPacket(Message message) {
     packet.data[0] = (message.packetType << 4 & 0b11110000) | (message.flags & 0b00001111);
     readedBytes++;
 
-    byteToBinary(packet.data, encodedRemainingLength.data, encodedRemainingLength.size, readedBytes);
+    byteToBinary(
+            packet.data,
+            encodedRemainingLength.data,
+            encodedRemainingLength.size,
+            readedBytes);
     readedBytes += encodedRemainingLength.size;
 
-    byteToBinary(packet.data, message.remaining, message.remainingSize, readedBytes);
+    byteToBinary(
+            packet.data,
+            message.remaining,
+            message.remainingSize,
+            readedBytes);
     readedBytes += message.remainingSize;
 
     free(encodedRemainingLength.data);
@@ -240,7 +278,7 @@ Packet messageToPacket(Message message) {
 }
 
 Message packetToMessage(Packet raw) {
-    isSizeCorrect(raw.size, 2, EXIT_MESSAGE);
+    matchValues(raw.size, 2, EXIT_MESSAGE);
 
     char controlByte = raw.data[0];
     int packetType, flags, remainingLength;

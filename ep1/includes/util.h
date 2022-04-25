@@ -13,8 +13,6 @@
 #include <fcntl.h>
 #include <sys/stat.h>
 
-#define testBit(value, bit) (value & (1 << bit))
-
 char *byteToBinary(
         char *dest,
         const char *src,
@@ -22,15 +20,15 @@ char *byteToBinary(
         size_t startPoint
         );
 
-void isSizeCorrect(
-        int size,
-        int expectedSize,
+void matchValues(
+        int val,
+        int expectedVal,
         int errorCode
         );
 
-void setTerminationHandler();
+void setSignIntAction();
 
-void resetCleanUpHook();
+void resetSignIntAction();
 
 int getTopicPipe(
         char *topicPath,

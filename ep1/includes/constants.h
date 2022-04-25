@@ -21,4 +21,6 @@
 #define LISTENQ 1
 #define MAXLINE 65535
 
+#define testBit(value, bit) (value & (1 << bit))
+
 #endif // EP1_CONSTANTS_H

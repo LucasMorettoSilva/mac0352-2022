@@ -92,7 +92,7 @@ int main(int argc, char **argv) {
 
     /* Define rotinas de clean up para serem executadas
      * quando o processo estiver finalizando */
-    setTerminationHandler();
+    setSignIntAction();
 
     printf("[Servidor no ar. Aguardando conexões na porta %s]\n", argv[1]);
     printf("[Para finalizar, pressione CTRL+C ou rode um kill ou killall]\n");
@@ -129,7 +129,7 @@ int main(int argc, char **argv) {
 
             /* Processo filho não precisa executar
              * as rotinas de clean up */
-            resetCleanUpHook();
+            resetSignIntAction();
 
             while ((input.size = read(connfd, input.data, MAXLINE)) > 0) {
                 printf("\n[Cliente conectado no processo filho %d enviou uma mensagem]", getpid());

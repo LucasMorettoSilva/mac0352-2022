@@ -9,24 +9,24 @@ char *byteToBinary(char *dest, const char *src, int n, size_t startPoint) {
     return dest;
 }
 
-void isSizeCorrect(int size, int expectedSize, int errorCode) {
-    if (size < expectedSize) {
+void matchValues(int val, int expectedVal, int errorCode) {
+    if (val < expectedVal) {
         fprintf(stderr, "Malformed packet! Closing connection.\n");
         exit(errorCode);
     }
 }
 
 void cleanFolder(char *folder) {
-    DIR *tmpFolder;
+    DIR *dirp;
     struct dirent *nextPipe;
     char *filePath;
 
-    if ((tmpFolder = opendir(folder)) == NULL) {
+    if ((dirp = opendir(folder)) == NULL) {
         perror("opendir :(\n");
         exit(EXIT_UTIL);
     }
 
-    while ((nextPipe = readdir(tmpFolder)) != NULL) {
+    while ((nextPipe = readdir(dirp)) != NULL) {
         if (!strcmp(nextPipe->d_name, ".") || !strcmp(nextPipe->d_name, ".."))
             continue;
 
@@ -44,7 +44,7 @@ void cleanFolder(char *folder) {
         free(filePath);
     }
 
-    if (closedir(tmpFolder) == -1) {
+    if (closedir(dirp) == -1) {
         perror("closedir :(\n");
         exit(EXIT_UTIL);
     }
@@ -54,7 +54,7 @@ void cleanFolder(char *folder) {
     }
 }
 
-void terminationHandler(int sig_no) {
+void signIntHandler(int sig_no) {
     printf("\n[CTRL-C pressed. Closing connection.]\n");
     cleanFolder(TMP_DIR);
     //Sets default behavior back
@@ -62,15 +62,15 @@ void terminationHandler(int sig_no) {
     kill(0, SIGINT);
 }
 
-void setTerminationHandler() {
+void setSignIntAction() {
     struct sigaction action;
     bzero(&action, sizeof(action));
 
-    action.sa_handler = &terminationHandler;
+    action.sa_handler = &signIntHandler;
     sigaction(SIGINT, &action, &sigIntAction);
 }
 
-void resetCleanUpHook() {
+void resetSignIntAction() {
     sigaction(SIGINT, &sigIntAction, NULL);
 }
 
