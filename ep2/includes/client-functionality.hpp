@@ -9,8 +9,8 @@
 #include <sys/socket.h>
 #include <string.h>
 #include <unistd.h>
-#include "util.hpp"
-#include "packages.hpp"
+#include "util/util.hpp"
+#include "util/packages.hpp"
 #include "game-board.hpp"
 
 #include<sys/types.h>
@@ -88,7 +88,7 @@ void end_match(int score1, int pipe);
 void pingback(int pipe);
 
 // Envia um ping para O outro cliente.
-void get_ping(int connfd);
+void ping_server(int connfd);
 
 // Encerra as operações do cliente (pode ser chamada apenas depois de logout).
 void quit(int ui);

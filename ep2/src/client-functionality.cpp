@@ -53,7 +53,7 @@ InviteOpponentAckPackage invite_opponent(int sockfd, int uifd) {
     unsigned char sndline[MAXLINE + 1], recvline[MAXLINE + 1];
     std::cin >> client_name;
     InviteOpponentPackage p(client_name);
-    int n = p.package_to_string(sndline);
+    int n = p.toString(sndline);
 
     if (write(sockfd, sndline, n) < 0) {
         std::cout << "Erro ao direcionar à saída :(" << std::endl;
@@ -104,7 +104,7 @@ void *match_latency(void *args) {
     // Latencia
     while (true) {
         clock_gettime(CLOCK_MONOTONIC, &start_delay);
-        get_ping(matchfd);
+        ping_server(matchfd);
         sleep(3);
     }
     std::cout << "erro inesperado ocorreu" << std::endl;
@@ -200,7 +200,7 @@ void *match_entrada(void *args) {
 int start_match(bool tipo, bool moving_first, bool x, int port, char *ip) {
     struct sockaddr_in servaddr, client_addr;
     socklen_t clen;
-    acabou = (int *) global_malloc(sizeof(int));
+    acabou = (int *) custom_malloc(sizeof(int));
     *acabou = -1;
     trava_shell = 0;
     delay_ind = 0;
@@ -304,7 +304,7 @@ int start_match(bool tipo, bool moving_first, bool x, int port, char *ip) {
         while (*acabou == -1) { sleep(1); }
     }
     int pont = *acabou;
-    global_free(acabou, sizeof(int));
+    custom_free(acabou, sizeof(int));
 
     return pont;
 }
@@ -319,7 +319,7 @@ int send_move(bool x, int connfd) {
 
     SendMovePackage p(r, c);
     unsigned char sndline[MAXLINE + 1];
-    ssize_t n = p.package_to_string(sndline);
+    ssize_t n = p.toString(sndline);
 
     if (write(connfd, sndline, n) < 0) {
         std::cout << "Erro ao enviar pacote" << std::endl;
@@ -370,7 +370,7 @@ int get_move(bool x, ustring recvline) {
 void surrender(int connfd) {
     SendMovePackage p(0, 0);
     unsigned char sndline[MAXLINE + 1];
-    ssize_t n = p.package_to_string(sndline);
+    ssize_t n = p.toString(sndline);
 
     if (write(connfd, sndline, n) < 0) {
         std::cout << "Erro ao enviar pacote :(" << std::endl;
@@ -383,7 +383,7 @@ void surrender(int connfd) {
 void end_match(int score1, int pipe) {
     EndMatchPackage p(score1);
     unsigned char sndline[MAXLINE + 1];
-    ssize_t n = p.package_to_string(sndline);
+    ssize_t n = p.toString(sndline);
     if (write(pipe, sndline, n) < 0) {
         std::cout << "Erro ao direcionar à saída :(" << std::endl;
         exit(11);
@@ -394,23 +394,24 @@ void pingback(int fd) {
     PingBackPackage p;
     unsigned char sndline[MAXLINE + 1];
 
-    ssize_t n = p.package_to_string(sndline);
+    ssize_t n = p.toString(sndline);
     if (write(fd, sndline, n) < 0) {
         std::cout << "Erro ao direcionar à saída :(" << std::endl;
         exit(11);
     }
 }
 
-void get_ping(int connfd) {
+void ping_server(int connfd) {
     PingReqPackage p;
     unsigned char sndline[MAXLINE + 1];
-    ssize_t n = p.package_to_string(sndline);
+    ssize_t n = p.toString(sndline);
     if (write(connfd, sndline, n) < 0) {
-        std::cout << "Erro no get_ping" << std::endl;
-        return;
+        std::cout << "erro ao pingar servidor" << std::endl;
     }
 }
 
-void quit(int ui) { exit(0); }
+void quit(int ui) {
+    exit(0);
+}
 
 #endif /* ifndef CLIENT_FUNCTIONALITY_CPP */

@@ -6,7 +6,7 @@
 
 #include <string>
 
-#include "packages.hpp"
+#include "util/packages.hpp"
 #include "server-io.hpp"
 
 extern int* current_user;

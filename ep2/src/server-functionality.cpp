@@ -10,7 +10,7 @@
 #include <string>
 
 #include "../includes/server-io.hpp"
-#include "../includes/util.hpp"
+#include "../includes/util/util.hpp"
 
 int *current_user;
 struct sockaddr_in client_addr;
@@ -22,7 +22,7 @@ void cmd_switch(ustring recvline, int n, int connfd) {
     std::string user, password, cur_password, new_password;
     uchar sendline[MAXLINE + 1];
     package_type = recvline[0];
-    PackageTemplate *return_package = nullptr;
+    Package *return_package = nullptr;
 
     switch (package_type) {
         case RECONNECT_PACKAGE: {
@@ -183,7 +183,7 @@ void cmd_switch(ustring recvline, int n, int connfd) {
     }
 
     if (return_package != nullptr) {
-        len = return_package->package_to_string(sendline);
+        len = return_package->toString(sendline);
 
         if (DEBUG) print_in_hex(sendline, len);
 
@@ -414,7 +414,7 @@ void invite_opponent(ustring recvline, user_t *invitor_user, int pipe) {
         std::cerr << "Deve estar logado para convidar" << std::endl;
         unsigned char sndline[MAXLINE + 1];
         InviteOpponentAckPackage p(0);
-        ssize_t n = p.package_to_string(sndline);
+        ssize_t n = p.toString(sndline);
         if (write(pipe, sndline, n) < 0) {
             printf("Reject :(\n");
             exit(11);
@@ -429,7 +429,7 @@ void invite_opponent(ustring recvline, user_t *invitor_user, int pipe) {
         // std::cerr << "O jogador convidado não existe" << std::endl;
         unsigned char sndline[MAXLINE + 1];
         InviteOpponentAckPackage p(0);
-        ssize_t n = p.package_to_string(sndline);
+        ssize_t n = p.toString(sndline);
         if (write(pipe, sndline, n) < 0) {
             printf("Reject :(\n");
             exit(11);
@@ -454,7 +454,7 @@ void invite_opponent(ustring recvline, user_t *invitor_user, int pipe) {
         // Jogador está ocupado e O servidor recusa
         unsigned char sndline[MAXLINE + 1];
         InviteOpponentAckPackage p(0);
-        ssize_t n = p.package_to_string(sndline);
+        ssize_t n = p.toString(sndline);
         if (write(pipe, sndline, n) < 0) {
             printf("Reject :(\n");
             exit(11);
@@ -488,7 +488,7 @@ void process_invitation_ack(ustring recvline, user_t *invited_user) {
 int pingreq(int pipe, int *heartbeat_resp) {
     PingReqPackage p;
     unsigned char sndline[MAXLINE + 1];
-    ssize_t n = p.package_to_string(sndline);
+    ssize_t n = p.toString(sndline);
     if (write(pipe, sndline, n) < 0) {
         printf("Reject :(\n");
         exit(11);
@@ -506,7 +506,7 @@ bool new_update_client_invitation(int client_invitation) {
 void send_invitation_package(std::string invitor_name, int pipe) {
     unsigned char sndline[MAXLINE + 1];
     InviteOpponentPackage p(invitor_name);
-    ssize_t n = p.package_to_string(sndline);
+    ssize_t n = p.toString(sndline);
     if (write(pipe, sndline, n) < 0) {
         printf("Reject :(\n");
         exit(11);
@@ -521,7 +521,7 @@ void send_invitation_ack_package(int resp, char *ip, int port, int pipe) {
         p.port = port;
     }
 
-    ssize_t n = p.package_to_string(sndline);
+    ssize_t n = p.toString(sndline);
     if (write(pipe, sndline, n) < 0) {
         printf("Reject :(\n");
         exit(11);

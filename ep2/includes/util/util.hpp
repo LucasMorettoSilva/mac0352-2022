@@ -8,6 +8,8 @@
 
 #include <string>
 
+#include "util/types.h"
+
 #define LISTENQ 1
 #define MAXDATASIZE 100
 #define MAXLINE 4096
@@ -39,8 +41,8 @@ typedef enum {
 int cmd_str_to_int(const std::string& cmd);
 
 void print_in_hex(ustring s, int len);
-void *global_malloc(size_t size);
-void global_free(void *addr, size_t size);
+void *custom_malloc(size_t size);
+void custom_free(void *addr, size_t size);
 
 void set_str(char *istr, std::string ostr);
 

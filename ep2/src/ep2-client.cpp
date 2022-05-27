@@ -13,8 +13,9 @@
 #include <string>
 
 #include "../includes/client-functionality.hpp"
-#include "../includes/packages.hpp"
-#include "../includes/util.hpp"
+#include "../includes/util/packages.hpp"
+#include "../includes/util/util.hpp"
+#include "../includes/util/create-user-package.h"
 
 using namespace std;
 
@@ -36,9 +37,9 @@ void cmd_switch() {
             cin >> username >> password;
             CreateUserPackage create_user_package =
                 CreateUserPackage(username, password);
-            len = create_user_package.package_to_string(sendline);
+            len = create_user_package.toString(sendline);
 
-            if (DEBUG) print_in_hex(sendline, len);
+            
             write(sockfd, sendline, len);
 
             break;
@@ -47,9 +48,9 @@ void cmd_switch() {
             cin >> username >> password;
             LoginPackage login_package = LoginPackage(username, password);
 
-            len = login_package.package_to_string(sendline);
+            len = login_package.toString(sendline);
 
-            if (DEBUG) print_in_hex(sendline, len);
+            
             write(sockfd, sendline, len);
 
             cur_username = username;
@@ -63,9 +64,9 @@ void cmd_switch() {
             }
             LogoutPackage logout_package = LogoutPackage();
 
-            len = logout_package.package_to_string(sendline);
+            len = logout_package.toString(sendline);
 
-            if (DEBUG) print_in_hex(sendline, len);
+            
             write(sockfd, sendline, len);
 
             break;
@@ -75,9 +76,9 @@ void cmd_switch() {
             ChangePasswordPackage change_password_package =
                 ChangePasswordPackage(cur_password, new_password);
 
-            len = change_password_package.package_to_string(sendline);
+            len = change_password_package.toString(sendline);
 
-            if (DEBUG) print_in_hex(sendline, len);
+            
             write(sockfd, sendline, len);
 
             break;
@@ -86,9 +87,9 @@ void cmd_switch() {
             ReqConnectedUsersPackage req_connected_users_package =
                 ReqConnectedUsersPackage();
 
-            len = req_connected_users_package.package_to_string(sendline);
+            len = req_connected_users_package.toString(sendline);
 
-            if (DEBUG) print_in_hex(sendline, len);
+            
             write(sockfd, sendline, len);
 
             break;
@@ -97,9 +98,9 @@ void cmd_switch() {
             ReqClassificationsPackage req_classifications_package =
                 ReqClassificationsPackage();
 
-            len = req_classifications_package.package_to_string(sendline);
+            len = req_classifications_package.toString(sendline);
 
-            if (DEBUG) print_in_hex(sendline, len);
+            
             write(sockfd, sendline, len);
 
             break;
@@ -130,7 +131,7 @@ void cmd_switch() {
 
             InviteOpponentAckPackage p(resp);
             p.port = get_free_port();
-            len = p.package_to_string(sendline);
+            len = p.toString(sendline);
             if (write(sockfd, sendline, len) < 0) {
                 printf("Erro ao direcionar à saída :(\n");
                 exit(11);
@@ -178,8 +179,8 @@ void *entrada(void *arg) {
             else if (recvline[0] == INVITE_OPPONENT_PACKAGE) {
                 InviteOpponentPackage p(recvline);
                 cout << "Usuário " << p.cliente
-                     << " está te convidando para jogar um jogo!" << endl;
-                cout << "Aceita O convite? (yes|no)" << endl;
+                     << " está te convidando para jogar uma partida!" << endl;
+                cout << "Aceitar convite? (yes|no)" << endl;
             } else if (recvline[0] == INVITE_OPPONENT_ACK_PACKAGE) {
                 if (write(uifds[1], recvline, n) < 0) {
                     printf("Erro ao direcionar à saída :(\n");
@@ -241,7 +242,7 @@ void *entrada(void *arg) {
                 voltou = true;
 
                 ReconnectPackage reconnect_pkg(cur_username);
-                n = reconnect_pkg.package_to_string(sendline);
+                n = reconnect_pkg.toString(sendline);
                 write(sockfd, sendline, n);
 
                 cout << "Servidor voltou!" << endl;
@@ -294,8 +295,8 @@ int main(int argc, char **argv) {
         exit(1);
     }
 
-    pid_jogo_latencia = (pid_t *) global_malloc(sizeof(pid_t));
-    pid_jogo_ui = (pid_t *) global_malloc(sizeof(pid_t));
+    pid_jogo_latencia = (pid_t *) custom_malloc(sizeof(pid_t));
+    pid_jogo_ui = (pid_t *) custom_malloc(sizeof(pid_t));
 
     pthread_t ui_thread, entrada_thread;
     if (pthread_create(&ui_thread, NULL, ui, NULL)) {
@@ -318,8 +319,8 @@ int main(int argc, char **argv) {
 
     close(sockfd);
     close(uifds[0]), close(uifds[1]);
-    global_free(pid_jogo_ui, sizeof(pid_t));
-    global_free(pid_jogo_latencia, sizeof(pid_t));
+    custom_free(pid_jogo_ui, sizeof(pid_t));
+    custom_free(pid_jogo_latencia, sizeof(pid_t));
     if (DEBUG) std::cout << "Matou todo mundo" << std::endl;
     exit(0);
 }

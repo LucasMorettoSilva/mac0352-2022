@@ -8,7 +8,7 @@
 #include <iostream>
 #include <string>
 
-#include "../includes/util.hpp"
+#include "../includes/util/util.hpp"
 
 using namespace std;
 
@@ -47,14 +47,14 @@ void serialize_users(bool server_shutdown) {
 }
 
 void deserialize_users() {
-    total_users = (int *) global_malloc(sizeof(int));
+    total_users = (int *) custom_malloc(sizeof(int));
     *total_users = 0;
-    users = (user_t **) global_malloc(MAX_USERS * sizeof(user_t *));
+    users = (user_t **) custom_malloc(MAX_USERS * sizeof(user_t *));
     for (int i = 0; i < MAX_USERS; ++i) {
-        users[i] = (user_t *) global_malloc(sizeof(user_t));
-        users[i]->name = (char *) global_malloc(MAX_STR_LEN * sizeof(char));
-        users[i]->password = (char *) global_malloc(MAX_STR_LEN * sizeof(char));
-        users[i]->ip = (char *) global_malloc(20 * sizeof(char));
+        users[i] = (user_t *) custom_malloc(sizeof(user_t));
+        users[i]->name = (char *) custom_malloc(MAX_STR_LEN * sizeof(char));
+        users[i]->password = (char *) custom_malloc(MAX_STR_LEN * sizeof(char));
+        users[i]->ip = (char *) custom_malloc(20 * sizeof(char));
     }
 
     ifstream user_file;

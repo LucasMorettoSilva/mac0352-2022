@@ -1,4 +1,4 @@
-#include "../includes/util.hpp"
+#include "../../includes/util/util.hpp"
 
 #include <errno.h>
 #include <stdio.h>
@@ -29,7 +29,7 @@ void print_in_hex(ustring s, int len) {
     fprintf(stdout, "'\n\n");
 }
 
-void *global_malloc(size_t size) {
+void *custom_malloc(size_t size) {
     void *allocated_bytes = mmap(NULL, size, PROT_READ | PROT_WRITE,
                                  MAP_SHARED | MAP_ANONYMOUS, 0, 0);
 
@@ -44,7 +44,7 @@ void *global_malloc(size_t size) {
     return allocated_bytes;
 }
 
-void global_free(void *addr, size_t size) {
+void custom_free(void *addr, size_t size) {
     int err = munmap(addr, size);
 
     if (err != 0) {

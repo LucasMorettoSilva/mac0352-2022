@@ -14,10 +14,10 @@
 
 #include <iostream>
 
-#include "../includes/packages.hpp"
+#include "../includes/util/packages.hpp"
 #include "../includes/server-functionality.hpp"
 #include "../includes/server-io.hpp"
-#include "../includes/util.hpp"
+#include "../includes/util/util.hpp"
 
 using namespace std;
 
@@ -105,7 +105,7 @@ int main(int argc, char **argv) {
             log_struct.client_ip = inet_ntoa(client_addr.sin_addr);
             write_log_line(CLIENT_CONNECTED, log_struct);
 
-            current_user = (int *) global_malloc(sizeof(int));
+            current_user = (int *) custom_malloc(sizeof(int));
             *current_user = -1;
 
             if (DEBUG) {
