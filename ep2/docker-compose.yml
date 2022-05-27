@@ -1,0 +1,17 @@
+version: '3.7'
+
+services:
+  ep2-server:
+    build:
+      context: .
+      dockerfile: Dockerfile
+      target: server
+    ports:
+      - "8080:8080"
+  ep2-client:
+    build:
+      context: .
+      dockerfile: Dockerfile
+      target: client
+    ports:
+      - "9080:9080"

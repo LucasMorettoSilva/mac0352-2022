@@ -1,0 +1,10 @@
+cmake-build-debug/
+build/
+bin/
+.idea/
+slides/
+docs/
+*.o
+*.md
+*.log
+LEIAME

@@ -1,0 +1,16 @@
+Esse é O projeto para O Exercício-Projeto 2 de MAC0352 - Redes de Computadores e
+Sistemas Distribuídos do IME-USP, ministrada pelo Prof. Dr. Daniel Macêdo
+Batista. Ele foi realizado pelos alunos Lucas Paiolla Forastiere (NUSP:
+11221911) e Lucas Hiroshi Harada (NUSP: 10737081)
+
+Para compilar os binários basta rodar:
+    make
+
+Para abrir O servidor, basta executar:
+    ./ep2-server <port>
+onde <port> é a porta na qual O servidor espera ouvir conexões.
+
+Para abrir um cliente, basta executar:
+    ./ep2-client <ip> <port>
+onde <ip> é O ip da máquina do servidor e <port> é a porta na qual esse servidor
+espera ouvir conexões.
