@@ -33,7 +33,7 @@ void cmd_switch() {
     cout << "Digite um comando:" << endl;
     cin >> cmd;
     switch (cmd_str_to_int(cmd)) {
-        case ADDUSER: {
+        case NEW: {
             cin >> username >> password;
             CreateUserPackage create_user_package =
                 CreateUserPackage(username, password);
@@ -44,7 +44,7 @@ void cmd_switch() {
 
             break;
         }
-        case LOGIN: {
+        case IN: {
             cin >> username >> password;
             LoginPackage login_package = LoginPackage(username, password);
 
@@ -57,7 +57,7 @@ void cmd_switch() {
 
             break;
         }
-        case LOGOUT: {            
+        case OUT: {
             if(cur_username == ""){
                 cout << "Você precisa estar logado para usar esse comando!" << endl;
                 break;
@@ -71,7 +71,7 @@ void cmd_switch() {
 
             break;
         }
-        case PASSWD: {
+        case PASS: {
             cin >> cur_password >> new_password;
             ChangePasswordPackage change_password_package =
                 ChangePasswordPackage(cur_password, new_password);
@@ -94,7 +94,7 @@ void cmd_switch() {
 
             break;
         }
-        case LEADERS: {
+        case HALLOFFAME: {
             ReqClassificationsPackage req_classifications_package =
                 ReqClassificationsPackage();
 
@@ -105,7 +105,7 @@ void cmd_switch() {
 
             break;
         }
-        case BEGIN: {
+        case CALL: {
             if(cur_username == ""){
                 cout << "Você precisa estar logado para usar esse comando!" << endl;
                 break;
@@ -145,7 +145,7 @@ void cmd_switch() {
 
             break;
         }
-        case EXIT: {
+        case BYE: {
             cout << "Exiting" << endl;
             close(sockfd);
             close(uifds[0]), close(uifds[1]);

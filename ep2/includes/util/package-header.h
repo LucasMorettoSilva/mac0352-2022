@@ -10,6 +10,7 @@ class PackageHeader {
 
 public:
     byte package_type;
+
     int remaning_length;
 
     PackageHeader();

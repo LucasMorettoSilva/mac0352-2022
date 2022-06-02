@@ -151,7 +151,7 @@ void cmd_switch(ustring recvline, int n, int connfd) {
             break;
         }
         case END_MATCH_PACKAGE: {
-            // write_log_line(MATCH_FINISHED);
+//             write_log_line(MATCH_FINISHED);
 
             if (is_invited(users[*current_user]->client_invitation)) {
                 log_struct_t log_struct;
@@ -184,8 +184,6 @@ void cmd_switch(ustring recvline, int n, int connfd) {
 
     if (return_package != nullptr) {
         len = return_package->toString(sendline);
-
-        if (DEBUG) print_in_hex(sendline, len);
 
         write(connfd, sendline, len);
     }
@@ -264,11 +262,6 @@ void *entrada_handler_thread(void *args) {
     ssize_t n;
     while ((n = read(connfd, recvline, MAXLINE)) > 0) {
         recvline[n] = 0;
-
-        if (DEBUG) {
-            fprintf(stdout, "Recebido: ");
-            print_in_hex(recvline, n);
-        }
 
         cmd_switch(recvline, n, connfd);
     }
@@ -361,8 +354,6 @@ bool user_login(std::string name, std::string password,
     user->port = (int) ntohs(client_addr.sin_port);
     user->client_invitation = 0;
     *current_user = find_user_index(user->name);
-    debug(user->name);
-    debug(user->ip);
     std::cout << "Logado com sucesso" << std::endl;
     return true;
 }
@@ -448,8 +439,6 @@ void invite_opponent(ustring recvline, user_t *invitor_user, int pipe) {
         invitor_user->client_invitation = (1 << 5) * invited_id;
         invited_user->client_invitation =
             (1 << 5) * invitor_id + (1 << 4) + (1 << 3);
-        debug(invited_user->name);
-        debug(invited_user->client_invitation);
     } else {
         // Jogador está ocupado e O servidor recusa
         unsigned char sndline[MAXLINE + 1];

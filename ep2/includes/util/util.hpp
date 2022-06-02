@@ -8,7 +8,7 @@
 
 #include <string>
 
-#include "util/types.h"
+#include "../util/types.h"
 
 #define LISTENQ 1
 #define MAXDATASIZE 100
@@ -22,19 +22,19 @@ typedef unsigned char *ustring;
 typedef u_int8_t byte;
 
 typedef enum {
-   ADDUSER,
-   PASSWD,
-   LOGIN,
-   LEADERS,
+   NEW,
+   PASS,
+   IN,
+   HALLOFFAME,
    LIST,
-   BEGIN,
-   SEND,
+   CALL,
+   PLAY,
    DELAY,
-   END,
-   LOGOUT,
+   OVER,
+   OUT,
    YES,
    NO,
-   EXIT
+   BYE
 } cmd_t;
 
 // Converte um command em seu enum equivalente

@@ -7,19 +7,19 @@
 #include <iostream> //temp
 
 int cmd_str_to_int(const std::string& cmd) {
-    if (cmd == "new") return ADDUSER;
-    if (cmd == "pass") return PASSWD;
-    if (cmd == "in") return LOGIN;
-    if (cmd == "halloffame") return LEADERS;
+    if (cmd == "new") return NEW;
+    if (cmd == "pass") return PASS;
+    if (cmd == "in") return IN;
+    if (cmd == "halloffame") return HALLOFFAME;
     if (cmd == "l") return LIST;
-    if (cmd == "call") return BEGIN;
-    if (cmd == "play") return SEND;
+    if (cmd == "call") return CALL;
+    if (cmd == "play") return PLAY;
     if (cmd == "delay") return DELAY;
-    if (cmd == "over") return END;
-    if (cmd == "out") return LOGOUT;
+    if (cmd == "over") return OVER;
+    if (cmd == "out") return OUT;
     if (cmd == "yes") return YES;
     if (cmd == "no") return NO;
-    if (cmd == "bye") return EXIT;
+    if (cmd == "bye") return BYE;
     return -1;
 }
 

@@ -13,23 +13,193 @@
 // PACKAGE TEMPLATE
 Package::Package() { }
 
-// LOGIN PACKAGE
+CreateUserPackage::CreateUserPackage(std::string username,
+                                     std::string password) {
+    this->username = username;
+    this->password = password;
+}
 
+CreateUserPackage::CreateUserPackage(ustring recvline) {
+    int pos = 3;
+    this->header = PackageHeader(recvline);
+    read_string(recvline, pos, this->username);
+    read_string(recvline, pos, this->password);
+}
 
-//  LOGIN ACK PACKAGE
+ssize_t CreateUserPackage::toString(ustring line) {
+    int name_len = this->username.size();
+    int pwd_len = this->password.size();
+    int total_len = name_len + pwd_len + 4;
 
+    this->header.package_type = CREATE_USER_PACKAGE;
+    this->header.remaning_length = total_len;
 
-// LOGOUT PACKAGE
+    int pos;
+    this->header.write(line, pos);
+    write_string(line, pos, this->username);
+    write_string(line, pos, this->password);
 
+    return pos;
+}
+
+// CREATE USER ACK PACKAGE
+CreateUserAckPackage::CreateUserAckPackage(byte return_code) {
+    this->header.package_type = CREATE_USER_ACK_PACKAGE;
+    this->header.remaning_length = 1;
+    this->return_code = return_code;
+}
+
+CreateUserAckPackage::CreateUserAckPackage(ustring recvline) {
+    int pos = 3;
+    this->header = PackageHeader(recvline);
+    this->return_code = recvline[pos];
+}
+
+ssize_t CreateUserAckPackage::toString(ustring line) {
+    this->header.package_type = CREATE_USER_ACK_PACKAGE;
+    this->header.remaning_length = 1;
+
+    int pos;
+    this->header.write(line, pos);
+    line[pos++] = this->return_code;
+
+    return pos;
+}
+
+// IN PACKAGE
+LoginPackage::LoginPackage(std::string user_login, std::string user_password) {
+    this->user_login = user_login;
+    this->user_password = user_password;
+}
+
+LoginPackage::LoginPackage(ustring recvline) {
+    int pos = 3;
+    this->header = PackageHeader(recvline);
+    read_string(recvline, pos, this->user_login);
+    read_string(recvline, pos, this->user_password);
+}
+
+ssize_t LoginPackage::toString(ustring line) {
+    int login_len = this->user_login.size();
+    int password_len = this->user_password.size();
+    int total_len = login_len + password_len + 4;
+
+    this->header.package_type = LOGIN_PACKAGE;
+    this->header.remaning_length = total_len;
+
+    int pos;
+    this->header.write(line, pos);
+    write_string(line, pos, this->user_login);
+    write_string(line, pos, this->user_password);
+
+    return pos;
+}
+
+//  IN ACK PACKAGE
+LoginAckPackage::LoginAckPackage(byte return_code) {
+    this->return_code = return_code;
+}
+
+LoginAckPackage::LoginAckPackage(ustring recvline) {
+    int pos = 3;
+    this->header = PackageHeader(recvline);
+    this->return_code = recvline[pos++];
+}
+
+ssize_t LoginAckPackage::toString(ustring line) {
+    this->header.package_type = LOGIN_ACK_PACKAGE;
+    this->header.remaning_length = 1;
+
+    int pos;
+    this->header.write(line, pos);
+    line[pos++] = this->return_code;
+    return pos;
+}
+
+// OUT PACKAGE
+LogoutPackage::LogoutPackage() { }
+
+LogoutPackage::LogoutPackage(ustring recvline) {
+    this->header = PackageHeader(recvline);
+}
+
+ssize_t LogoutPackage::toString(ustring line) {
+    this->header.package_type = LOGOUT_PACKAGE;
+    this->header.remaning_length = 0;
+
+    int pos = 0;
+    this->header.write(line, pos);
+
+    return pos;
+}
 
 // CHANGE PASSWORD PACKAGE
+ChangePasswordPackage::ChangePasswordPackage(std::string cur_password,
+                                             std::string new_password) {
+    this->cur_password = cur_password;
+    this->new_password = new_password;
+}
 
+ChangePasswordPackage::ChangePasswordPackage(ustring recvline) {
+    int pos = 3;
+    this->header = PackageHeader(recvline);
+    read_string(recvline, pos, this->cur_password);
+    read_string(recvline, pos, this->new_password);
+}
+
+ssize_t ChangePasswordPackage::toString(ustring line) {
+    int cur_password_len = this->cur_password.size();
+    int new_password_len = this->new_password.size();
+    int total_len = cur_password_len + new_password_len + 4;
+
+    this->header.package_type = CHANGE_PASSWORD_PACKAGE;
+    this->header.remaning_length = total_len;
+
+    int pos = 0;
+    this->header.write(line, pos);
+    write_string(line, pos, this->cur_password);
+    write_string(line, pos, this->new_password);
+
+    return pos;
+}
 
 // CHANGE PASSWORD ACK PACKAGE
+ChangePasswordAckPackage::ChangePasswordAckPackage(byte return_code) {
+    this->return_code = return_code;
+}
 
+ChangePasswordAckPackage::ChangePasswordAckPackage(ustring recvline) {
+    int pos = 3;
+    this->header = PackageHeader(recvline);
+    this->return_code = recvline[pos++];
+}
+
+ssize_t ChangePasswordAckPackage::toString(ustring line) {
+    this->header.package_type = CHANGE_PASSWORD_ACK_PACKAGE;
+    this->header.remaning_length = 1;
+
+    int pos = 0;
+    this->header.write(line, pos);
+    line[pos++] = this->return_code;
+
+    return pos;
+}
 
 // REQUEST ALL CONNECTED USERS PACKAGE
+ReqConnectedUsersPackage::ReqConnectedUsersPackage() { }
+ReqConnectedUsersPackage::ReqConnectedUsersPackage(ustring recvline) {
+    this->header = PackageHeader(recvline);
+}
 
+ssize_t ReqConnectedUsersPackage::toString(ustring line) {
+    this->header.package_type = REQUEST_ALL_CONNECTED_USERS_PACKAGE;
+    this->header.remaning_length = 0;
+
+    int pos = 0;
+    this->header.write(line, pos);
+
+    return pos;
+}
 
 // RESPONSE ALL CONNECTED USERS PACKAGE
 ResConnectedUsersPackage::ResConnectedUsersPackage() { }
