@@ -12,10 +12,9 @@
 #include <iostream>
 #include <string>
 
-#include "../includes/client-functionality.hpp"
-#include "../includes/util/packages.hpp"
-#include "../includes/util/util.hpp"
-#include "../includes/util/create-user-package.h"
+#include <client-helper.h>
+#include <packages.h>
+#include <util.h>
 
 using namespace std;
 
@@ -30,7 +29,7 @@ void cmd_switch() {
     ssize_t len;
     uchar sendline[MAXLINE + 1];
 
-    cout << "Digite um comando:" << endl;
+    cout << "JogoDaVelha> ";
     cin >> cmd;
     switch (cmd_str_to_int(cmd)) {
         case NEW: {
@@ -149,7 +148,7 @@ void cmd_switch() {
             cout << "Exiting" << endl;
             close(sockfd);
             close(uifds[0]), close(uifds[1]);
-            std::cout << "Matou todo mundo" << std::endl;
+            std::cout << "All process closed" << std::endl;
             exit(0);
         }
     }
@@ -191,7 +190,7 @@ void *entrada(void *arg) {
                     CreateUserAckPackage(recvline);
 
                 if (create_user_ack_package.return_code) {
-                    cout << "Criado com sucesso." << endl;
+                    cout << "Usuário criado com sucesso." << endl;
                 } else {
                     cout << "Falha ao criar." << endl;
                 }

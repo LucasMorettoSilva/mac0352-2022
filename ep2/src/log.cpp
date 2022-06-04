@@ -1,14 +1,15 @@
-#ifndef SERVER_IO_CPP
-#define SERVER_IO_CPP
+#ifndef LOG_CPP
+#define LOG_CPP
 
-#include "../includes/server-io.hpp"
+#include <log.h>
 
 #include <ctime>
 #include <fstream>
 #include <iostream>
 #include <string>
 
-#include "../includes/util/util.hpp"
+#include <types.h>
+#include <util.h>
 
 using namespace std;
 
@@ -157,4 +158,4 @@ void write_log_line(log_t log_entry, log_struct_t log_struct) {
     }
 }
 
-#endif /* ifndef SERVER_IO_CPP */
+#endif /* ifndef LOG_CPP */

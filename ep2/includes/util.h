@@ -1,6 +1,5 @@
-
-#ifndef UTIL_HPP
-#define UTIL_HPP
+#ifndef UTIL_H
+#define UTIL_H
 
 #include <stdlib.h>
 #include <string.h>
@@ -8,7 +7,7 @@
 
 #include <string>
 
-#include "../util/types.h"
+#include <types.h>
 
 #define LISTENQ 1
 #define MAXDATASIZE 100
@@ -51,4 +50,4 @@ int byte_str_to_int(ustring recvline, int pos);
 void write_string(ustring outstr, int &pos, std::string str_to_write);
 void read_string(ustring instr, int &pos, std::string &str_to_write);
 
-#endif /* ifndef UTIL_HPP */
+#endif /* ifndef UTIL_H */

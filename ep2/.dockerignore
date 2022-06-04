@@ -7,4 +7,5 @@ docs/
 *.o
 *.md
 *.log
+*.db
 LEIAME

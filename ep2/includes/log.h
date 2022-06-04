@@ -1,15 +1,15 @@
-#ifndef SERVER_IO_HPP
-#define SERVER_IO_HPP
+#ifndef LOG_H
+#define LOG_H
 
 #include <ostream>
 #include <string>
 
 #define MAX_STR_LEN 128
 #define USER_PATH "users.db"
-#define LOG_PATH "ttt.log"
+#define LOG_PATH "game.log"
 
 class user_t {
-  public:
+public:
     char *name;
     char *password;
     int score;
@@ -29,6 +29,7 @@ extern user_t **users;
 extern int *total_users;
 
 void serialize_users(bool server_shutdown);
+
 void deserialize_users();
 
 typedef enum {
@@ -49,7 +50,7 @@ typedef enum {
 } log_t;
 
 class log_struct_t {
-  public:
+public:
     char *client_ip;
     std::string username;
     std::string player1_name;
@@ -61,4 +62,4 @@ class log_struct_t {
 
 void write_log_line(log_t, log_struct_t);
 
-#endif /* ifndef SERVER_IO_HPP */
+#endif /* ifndef LOG_H */

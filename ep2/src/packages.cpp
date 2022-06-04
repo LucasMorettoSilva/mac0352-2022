@@ -1,7 +1,7 @@
 #ifndef PACKAGES_CPP
 #define PACKAGES_CPP
 
-#include "../../includes/util/packages.hpp"
+#include <packages.h>
 
 #include <stdio.h>
 #include <stdlib.h>

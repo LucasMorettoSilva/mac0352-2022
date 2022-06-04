@@ -1,9 +1,9 @@
-#ifndef TTT_ENGINE_HPP
-#define TTT_ENGINE_HPP
+#ifndef GAME_BOARD_H
+#define GAME_BOARD_H
 
 #include <iostream>
 
-#include "game-piece.hpp"
+#include <game-piece.h>
 
 class GameBoard {
 
@@ -35,4 +35,4 @@ public:
 	void print();
 };
 
-#endif /* ifndef TTT_ENGINE_HPP */
+#endif /* ifndef GAME_BOARD_H */

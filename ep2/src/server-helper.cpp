@@ -1,16 +1,15 @@
-#ifndef SERVER_FUNCTIONALITY_CPP
-#define SERVER_FUNCTIONALITY_CPP
+#ifndef SERVER_HELPER_CPP
+#define SERVER_HELPER_CPP
 
-#include "../includes/server-functionality.hpp"
+#include <server-helper.h>
+#include <log.h>
+#include <util.h>
 
 #include <arpa/inet.h>
 
 #include <cstring>
 #include <iostream>
 #include <string>
-
-#include "../includes/server-io.hpp"
-#include "../includes/util/util.hpp"
 
 int *current_user;
 struct sockaddr_in client_addr;
@@ -133,7 +132,7 @@ void cmd_switch(ustring recvline, int n, int connfd) {
         }
 
         case REQUEST_CLASSIFICATIONS_PACKAGE: {
-            std::cout << "Leaders" << std::endl;
+            std::cout << "halloffame" << std::endl;
             return_package = new ResClassificationsPackage();
             break;
         }
@@ -521,4 +520,4 @@ bool is_invited(int client_invitation) {
     return (((1 << 4) & client_invitation) != 0);
 }
 
-#endif /* ifndef SERVER_FUNCTIONALITY_CPP */
+#endif /* ifndef SERVER_HELPER_CPP */

@@ -1,7 +1,7 @@
-#ifndef CLIENT_FUNCTIONALITY_CPP
-#define CLIENT_FUNCTIONALITY_CPP
+#ifndef EP2_CLIENT_HELPER_CPP
+#define EP2_CLIENT_HELPER_CPP
 
-#include "../includes/client-functionality.hpp"
+#include <client-helper.h>
 
 #include <iostream>
 #include <string>
@@ -11,7 +11,7 @@ pid_t *pid_jogo_latencia;
 pid_t *pid_jogo_ui;
 pid_t *pid_jogo_pai;
 
-void create_user(std::string name, std::string password) { }
+void create_user(std::string name, std::string password) {}
 
 bool user_login(std::string name, std::string password) { return false; }
 
@@ -19,11 +19,11 @@ bool change_password(std::string cur_password, std::string new_password) {
     return false;
 }
 
-void user_logout() { }
+void user_logout() {}
 
-void show_all_connected_users() { }
+void show_all_connected_users() {}
 
-void show_classifications(int n) { }
+void show_classifications(int n) {}
 
 int get_free_port() {
     struct sockaddr_in sin;
@@ -272,7 +272,7 @@ int start_match(bool tipo, bool moving_first, bool x, int port, char *ip) {
         t.build();
         t.print();
 
-        bool args[2] = { moving_first, x };
+        bool args[2] = {moving_first, x};
 
         if (pthread_create(&ui_match_thread, NULL, match_ui, &args)) {
             printf("Erro ao criar thread UI\n");
@@ -330,7 +330,7 @@ int send_move(bool x, int connfd) {
 
     if ((t).winner() == 1) {
         std::cout << "Você ganhou!!" << std::endl;
-        return 2;
+        return 3;
     } else if ((t).winner() == 2) {
         std::cout << "Empatou!!" << std::endl;
         return 1;
@@ -414,4 +414,4 @@ void quit(int ui) {
     exit(0);
 }
 
-#endif /* ifndef CLIENT_FUNCTIONALITY_CPP */
+#endif /* ifndef EP2_CLIENT_HELPER_CPP */

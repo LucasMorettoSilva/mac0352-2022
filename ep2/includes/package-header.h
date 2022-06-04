@@ -4,7 +4,7 @@
 #include <cstddef>
 #include <string>
 
-#include "util.hpp"
+#include <util.h>
 
 class PackageHeader {
 

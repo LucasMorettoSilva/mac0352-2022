@@ -1,16 +1,39 @@
-Esse é O projeto para O Exercício-Projeto 2 de MAC0352 - Redes de Computadores e
-Sistemas Distribuídos do IME-USP, ministrada pelo Prof. Dr. Daniel Macêdo
-Batista. Ele foi realizado pelos alunos Lucas Paiolla Forastiere (NUSP:
-11221911) e Lucas Hiroshi Harada (NUSP: 10737081)
+Nome: Lucas Moretto da Silva
+NUSP: 9778602
 
-Para compilar os binários basta rodar:
-    make
+##################################################################
 
-Para abrir O servidor, basta executar:
-    ./ep2-server <port>
-onde <port> é a porta na qual O servidor espera ouvir conexões.
+1. Para limpar os arquivos de build e executáveis de
+   compilações anteriores.
 
-Para abrir um cliente, basta executar:
-    ./ep2-client <ip> <port>
-onde <ip> é O ip da máquina do servidor e <port> é a porta na qual esse servidor
-espera ouvir conexões.
+$ make clean
+
+##################################################################
+
+2. Para gerar o executável do cliente e do servidor
+   rode o comando abaixo.
+
+   Os executaveis build/server e build/client serão gerados.
+
+$ make
+
+##################################################################
+
+3. Para rodar o executável do servidor faça.
+
+$ make run-server PORT=<PORT>
+
+##################################################################
+
+4. Para rodar o executável do cliente faça.
+
+$ make run-client HOST_SERVER=<IP DO SERVIDOR> PORT=<PORTA DO SERVIDOR>
+
+##################################################################
+
+OBS: Foi notado um bug recorrent ao atualizar a saída padrão do cliente
+quando alguma resposta do servidor é recebida. Certas vezes, após receber
+alguma respostas do servidor que precise exibir uma mensagem ao usuário
+(através da saída padrão), a thread de UI acaba não exibindo o prompt
+"JogoDaVelha>" para o usuário. Nesses momentos basta digitar qualquer
+coisa e pressionar enter que o promt voltará ao normal.

@@ -1,5 +1,5 @@
-#ifndef CLIENT_FUNCTIONALITY_HPP
-#define CLIENT_FUNCTIONALITY_HPP
+#ifndef EP2_CLIENT_HELPER_H
+#define EP2_CLIENT_HELPER_H
 
 #include <string>
 #include <arpa/inet.h>
@@ -9,12 +9,13 @@
 #include <sys/socket.h>
 #include <string.h>
 #include <unistd.h>
-#include "util/util.hpp"
-#include "util/packages.hpp"
-#include "game-board.hpp"
 
-#include<sys/types.h>
-#include<signal.h>
+#include <util.h>
+#include <packages.h>
+#include <game-board.h>
+
+#include <sys/types.h>
+#include <signal.h>
 
 #define MAXLINE 4096
 #define LISTENQ 1
@@ -93,4 +94,4 @@ void ping_server(int connfd);
 // Encerra as operações do cliente (pode ser chamada apenas depois de logout).
 void quit(int ui);
 
-#endif /* ifndef CLIENT_FUNCTIONALITY_HPP */
+#endif /* ifndef EP2_CLIENT_HELPER_H */

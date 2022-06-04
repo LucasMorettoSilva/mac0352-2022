@@ -1,6 +1,4 @@
 #include <arpa/inet.h>
-#include <errno.h>
-#include <netdb.h>
 #include <netinet/in.h>
 #include <pthread.h>
 #include <signal.h>
@@ -9,15 +7,14 @@
 #include <string.h>
 #include <sys/socket.h>
 #include <sys/types.h>
-#include <time.h>
 #include <unistd.h>
 
 #include <iostream>
 
-#include "../includes/util/packages.hpp"
-#include "../includes/server-functionality.hpp"
-#include "../includes/server-io.hpp"
-#include "../includes/util/util.hpp"
+#include <packages.h>
+#include <server-helper.h>
+#include <log.h>
+#include <util.h>
 
 using namespace std;
 

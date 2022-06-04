@@ -1,14 +1,13 @@
-#ifndef PACKAGES_HPP
-#define PACKAGES_HPP
+#ifndef PACKAGES_H
+#define PACKAGES_H
 
 #include <cstddef>
 #include <string>
 
-#include "../server-io.hpp"
-
-#include "../includes/util/util.hpp"
-#include "../includes/util/package-header.h"
-#include "../includes/util/package-type.h"
+#include <log.h>
+#include <util.h>
+#include <package-header.h>
+#include <package-type.h>
 
 class Package {
 public:
@@ -188,4 +187,4 @@ public:
     ssize_t toString(ustring line);
 };
 
-#endif /* ifndef PACKAGES_HPP */
+#endif /* ifndef PACKAGES_H */

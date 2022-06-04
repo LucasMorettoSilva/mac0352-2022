@@ -1,7 +1,7 @@
-#ifndef TTT_ENGINE_CPP
-#define TTT_ENGINE_CPP
+#ifndef GAME_BOARD_CPP
+#define GAME_BOARD_CPP
 
-#include "../includes/game-board.hpp"
+#include <game-board.h>
 
 GameBoard::GameBoard() {
     this->build();
@@ -91,4 +91,4 @@ void GameBoard::print() {
     }
 }
 
-#endif /* ifndef TTT_ENGINE_CPP */
+#endif /* ifndef GAME_BOARD_CPP */

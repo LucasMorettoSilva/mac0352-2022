@@ -1,13 +1,13 @@
-#ifndef SERVER_FUNCTIONALITY_HPP
-#define SERVER_FUNCTIONALITY_HPP
+#ifndef SERVER_HELPER_H
+#define SERVER_HELPER_H
 
 #include <netdb.h>
 #include <unistd.h>
 
 #include <string>
 
-#include "util/packages.hpp"
-#include "server-io.hpp"
+#include <packages.h>
+#include <log.h>
 
 extern int* current_user;
 extern struct sockaddr_in client_addr;
@@ -82,4 +82,4 @@ void send_invitation_package(std::string invitor_name, int pipe);
 // Processa O convite se é O convidado, ou seja, envia
 void send_invitation_ack_package(int resp, char *ip, int port, int pipe);
 
-#endif /* ifndef SERVER_FUNCTIONALITY_HPP */
+#endif /* ifndef SERVER_HELPER_H */

@@ -10,7 +10,7 @@ CPP=g++
 CFLAGS=-I$(INCLUDE_DIR) -lm -pthread
 
 SRC_EXT=.cpp
-INC_EXT=.hpp
+INC_EXT=.h
 OBJ_EXT=$(SRC_EXT).o
 
 DOCKER_CMP=docker-compose
@@ -21,11 +21,11 @@ SRCS := $(shell find $(SRC_DIR) -name *$(SRC_EXT))
 OBJS := $(SRCS:%=$(BUILD_DIR)/%.o)
 DEPS := $(OBJS:.o=.d)
 
-_CLIENT_OBJS  = client util client-functionality packages server-io game-board
+_CLIENT_OBJS  = client util client-helper packages log game-board package-header
 __CLIENT_OBJS = $(addsuffix $(OBJ_EXT), $(_CLIENT_OBJS))
 CLIENT_OBJS   = $(addprefix $(BUILD_DIR)/$(SRC_DIR)/, $(__CLIENT_OBJS))
 
-_SERVER_OBJS  = server util server-functionality server-io packages
+_SERVER_OBJS  = server util server-helper log packages package-header
 __SERVER_OBJS = $(addsuffix $(OBJ_EXT), $(_SERVER_OBJS))
 SERVER_OBJS   = $(addprefix $(BUILD_DIR)/$(SRC_DIR)/, $(__SERVER_OBJS))
 
