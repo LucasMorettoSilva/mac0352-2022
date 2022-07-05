@@ -11,5 +11,6 @@ COPY src src
 RUN mvn package -DskipTests
 
 FROM tomcat:9.0.59
+#FROM tomcat:9.0.62
 
 COPY --from=build /usr/app/target/*.war /usr/local/tomcat/webapps/

@@ -3,7 +3,6 @@ package com.reznok.helloworld;
 public class Greeting {
 
 	private long id;
-	private String content;
 
 	public long getId() {
 		return id;
