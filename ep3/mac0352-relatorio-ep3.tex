@@ -1,0 +1,181 @@
+\documentclass[12pt,letterpaper]{article}
+\usepackage[brazil]{babel}
+\usepackage[utf8]{inputenc}
+\usepackage{graphicx}
+\usepackage{times}
+\usepackage{url}
+\usepackage{algorithm}
+\usepackage{algorithmic}
+\usepackage[bottom=2cm,top=2cm,left=2cm,right=2cm]{geometry}
+
+\title{Relatório do EP3\\MAC0352 -- Redes de Computadores e Sistemas Distribuídos -- 1/2022}
+\author{$<$Aluno$>$ ($<$NUSP$>$)}
+\date{}
+
+\begin{document}
+\maketitle
+
+\section{Passo 0}
+
+Na definição do protocolo OpenFlow, o que um switch faz toda vez que
+ele recebe um pacote que ele nunca recebeu antes?
+
+Um pacote que nunca foi recebido anteriormente não possui um fluxo definid. Por conta disso, o switch envia o pacota ao controlador OpenFlow.
+Este determinará a forma como o pacote será lido, podendo adicionar um fluxo ao switch para tratar futuros pacotes semelhantes ou ignora-lo (drop).
+
+\section{Passo 2}
+
+
+Com o acesso à Internet funcionando em sua rede local, instale na VM o
+programa \texttt{traceroute} usando \texttt{sudo apt install
+traceroute} e escreva abaixo a saída do comando \texttt{sudo
+traceroute -I www.inria.fr}. Pela saída do comando, a partir de qual
+salto os pacotes alcançaram um roteador na Europa? Como você chegou a
+essa conclusão?
+
+\begin{verbatim}
+<traceroute to www.inria.fr (128.93.162.84), 30 hops max, 60 byte packets
+ 1  10.0.2.2 (10.0.2.2)  1.451 ms  0.892 ms  0.159 ms
+ 2  * * *
+ 3  * * *
+ 4  core-cce.uspnet.usp.br (143.107.255.225)  2.892 ms  3.381 ms  3.472 ms
+ 5  border1.uspnet.usp.br (143.107.251.29)  3.094 ms  2.877 ms  2.415 ms
+ 6  usp-sp.bkb.rnp.br (200.143.255.113)  3.152 ms  3.843 ms  3.572 ms
+ 7  br-rnp.redclara.net (200.0.204.213)  110.882 ms  111.045 ms  110.601 ms
+ 8  us-br.redclara.net (200.0.204.9)  111.203 ms  111.132 ms  111.039 ms
+ 9  redclara-gw.par.fr.geant.net (62.40.125.168)  212.854 ms  212.793 ms  212.873 ms
+10  renater-lb1-gw.mx1.par.fr.geant.net (62.40.124.70)  212.777 ms  233.930 ms  233.771 ms
+11  te1-1-inria-rtr-021.noc.renater.fr (193.51.177.107)  212.957 ms  212.683 ms  212.783 ms
+12  inria-rocquencourt-te1-4-inria-rtr-021.noc.renater.fr (193.51.184.177)  213.021 ms  214.159 ms  214.016 ms
+13  unit240-reth1-vfw-ext-dc1.inria.fr (192.93.122.19)  213.152 ms  212.698 ms  213.692 ms
+14  ezp3.inria.fr (128.93.162.84)  213.233 ms  213.307 ms  212.836 ms><traceroute to www.inria.fr (128.93.162.84), 30 hops max, 60 byte packets
+ 1  10.0.2.2 (10.0.2.2)  1.451 ms  0.892 ms  0.159 ms
+ 2  * * *
+ 3  * * *
+ 4  core-cce.uspnet.usp.br (143.107.255.225)  2.892 ms  3.381 ms  3.472 ms
+ 5  border1.uspnet.usp.br (143.107.251.29)  3.094 ms  2.877 ms  2.415 ms
+ 6  usp-sp.bkb.rnp.br (200.143.255.113)  3.152 ms  3.843 ms  3.572 ms
+ 7  br-rnp.redclara.net (200.0.204.213)  110.882 ms  111.045 ms  110.601 ms
+ 8  us-br.redclara.net (200.0.204.9)  111.203 ms  111.132 ms  111.039 ms
+ 9  redclara-gw.par.fr.geant.net (62.40.125.168)  212.854 ms  212.793 ms  212.873 ms
+10  renater-lb1-gw.mx1.par.fr.geant.net (62.40.124.70)  212.777 ms  233.930 ms  233.771 ms
+11  te1-1-inria-rtr-021.noc.renater.fr (193.51.177.107)  212.957 ms  212.683 ms  212.783 ms
+12  inria-rocquencourt-te1-4-inria-rtr-021.noc.renater.fr (193.51.184.177)  213.021 ms  214.159 ms  214.016 ms
+13  unit240-reth1-vfw-ext-dc1.inria.fr (192.93.122.19)  213.152 ms  212.698 ms  213.692 ms
+14  ezp3.inria.fr (128.93.162.84)  213.233 ms  213.307 ms  212.836 ms>
+\end{verbatim}
+
+Realizando o teste através da rede Eduroam da USP, alcançamos um servidor europeu a partir do salto 9, \newline \texttt{redclara-gw.par.fr.geant.net}.
+Podemos identificar isso pela presença do domínio \texttt{fr} e pelo endereço IP desse servidor.
+
+\section{Passo 3 - Parte 1}
+
+
+Execute o comando \texttt{iperf}, conforme descrito no tutorial, antes
+de usar a opção \texttt{--switch user}, 5 vezes.  Escreva abaixo o
+valor médio e o intervalo de confiança da taxa retornada (considere
+sempre o primeiro valor do vetor retornado).
+
+\begin{verbatim}
+*** Iperf: testing TCP bandwidth between h1 and h3
+\end{verbatim}
+
+\begin{center}
+\begin{tabular}{ |c|c| } 
+ \hline
+ Teste & Gbits/sec \\
+ \hline
+ 1 & 17.0 \\ 
+ 2 & 16.6 \\ 
+ 3 & 16.1 \\ 
+ 4 & 15.8 \\ 
+ 5 & 13.9 \\ 
+ \hline
+\end{tabular}
+\end{center}
+
+\begin{center}
+\begin{tabular}{|c|c|}
+ \hline
+ Média (GBits/sec) & Intervalo de Confiança (GBits/sec)\\
+ \hline
+ 15.88 & (14.39, 17.37) \\
+ \hline
+ \end{tabular}
+\end{center}
+
+
+\section{Passo 3 - Parte 2}
+
+
+Execute o comando \texttt{iperf}, conforme descrito no tutorial, com a
+opção \texttt{--switch user}, 5 vezes. Escreva abaixo o valor médio e
+o intervalo de confiança da taxa retornada (considere sempre o
+primeiro valor do vetor retornado). O resultado agora corresponde a
+quantas vezes menos o da Seção anterior? Qual o motivo dessa
+diferença?
+
+
+\section{Passo 4 - Parte 1}
+
+
+Execute o comando \texttt{iperf}, conforme descrito no tutorial,
+usando o controlador \texttt{of\_tutorial.py} original sem
+modificação, 5 vezes. Escreva abaixo o valor médio e o intervalo de
+confiança da taxa retornada (considere sempre o primeiro valor do
+vetor retornado). O resultado agora corresponde a quantas vezes menos
+o da Seção 3? Qual o motivo para essa diferença? Use a saída do
+comando \texttt{tcpdump}, deixando claro em quais computadores
+virtuais ele foi executado, para justificar a sua resposta.
+
+
+\section{Passo 4 - Parte 2}
+
+
+Execute o comando \texttt{iperf}, conforme descrito no tutorial,
+usando o seu controlador \texttt{switch.py}, 5 vezes.  Escreva abaixo
+o valor médio e o intervalo de confiança da taxa retornada (considere
+sempre o primeiro valor do vetor retornado). O resultado agora
+corresponde a quantas vezes mais o da Seção anterior?  Qual o motivo
+dessa diferença? Use a saída do comando \texttt{tcpdump}, deixando
+claro em quais computadores virtuais ele foi executado, para
+justificar a sua resposta.
+
+
+\section{Passo 4 - Parte 3}
+
+
+Execute o comando \texttt{iperf}, conforme descrito no tutorial,
+usando o seu controlador \texttt{switch.py} melhorado, 5 vezes.
+Escreva abaixo o valor médio e o intervalo de confiança da taxa
+retornada (considere sempre o primeiro valor do vetor retornado). O
+resultado agora corresponde a quantas vezes mais o da Seção anterior?
+Qual o motivo dessa diferença? Use a saída do comando
+\texttt{tcpdump}, deixando claro em quais computadores virtuais ele
+foi executado, e saídas do comando \texttt{sudo ovs-ofctl}, com os
+devidos parâmetros, para justificar a sua resposta.
+
+
+\section{Passo 5}
+
+
+Explique a lógica implementada no seu controlador
+\texttt{firewall.py} e mostre saídas de comandos que comprovem que ele
+está de fato funcionando (saídas dos comandos \texttt{tcpdump},
+\texttt{sudo ovs-ofctl}, \texttt{nc}, \texttt{iperf} e \texttt{telnet}
+são recomendadas)
+
+
+\section{Configuração dos computadores virtual e real usados nas
+medições (se foi usado mais de um, especifique qual passo foi feito
+com cada um)}
+
+\section{Referências}
+
+\begin{itemize}
+   \item
+   \item
+   % \item (Coloque quantos itens forem necessários)
+\end{itemize}
+
+\end{document}
