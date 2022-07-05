@@ -1,8 +1,10 @@
 FROM maven:3-jdk-11-slim as build
 
+ENV POM pom.xml
+
 WORKDIR /usr/app
 
-COPY pom.xml .
+COPY ${POM} pom.xml
 
 RUN mvn -B dependency:go-offline
 

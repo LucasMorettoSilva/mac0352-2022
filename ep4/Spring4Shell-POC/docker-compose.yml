@@ -1,7 +1,15 @@
 version: '3.7'
 
 services:
-  s4shell:
+  spring4shell-vuln:
     build: .
     ports:
       - "8080:8080"
+    environment:
+      POM: pom.xml
+  spring4shell-fixed:
+    build: .
+    ports:
+      - "8080:8080"
+    environment:
+      POM: pom-fixed.xml
