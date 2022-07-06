@@ -1,16 +1,13 @@
+# syntax=docker/dockerfile:experimental
 FROM maven:3-jdk-11-slim as build
-
-ENV POM pom.xml
 
 WORKDIR /usr/app
 
-COPY ${POM} pom.xml
-
-RUN mvn -B dependency:go-offline
+COPY pom.xml .
 
 COPY src src
 
-RUN mvn package -DskipTests
+RUN --mount=type=cache,target=/root/.m2,rw mvn -B clean package -DskipTests
 
 FROM tomcat:9.0.59
 #FROM tomcat:9.0.62
